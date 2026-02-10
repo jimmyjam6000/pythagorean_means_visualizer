@@ -175,15 +175,15 @@ dyn.appendChild(el("line", {
 
 
     // --- A (red): radius from O to C ---
-    dyn.appendChild(el("line", { x1: Osvg.x, y1: Osvg.y, x2: Csv.x, y2: Csv.y, stroke:"#e11d48", "stroke-width":"0.03" }));
+    dyn.appendChild(el("line", { x1: Osvg.x, y1: Osvg.y, x2: Csv.x, y2: Csv.y, stroke:"#e11d48", "stroke-width":"0.01" }));
     dyn.appendChild(el("text", { x: 0.04, y: -0.55, fill:"#e11d48", "font-size":"0.14", class:"mono" })).textContent = "A";
 
     // --- G (blue): vertical from P to J ---
-    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#2563eb", "stroke-width":"0.03" }));
+    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#2563eb", "stroke-width":"0.01" }));
     dyn.appendChild(el("text", { x: Jsv.x + 0.03, y: (Psv.y + Jsv.y)/2, fill:"#2563eb", "font-size":"0.14", class:"mono" })).textContent = "G";
 
     // --- Q (green): segment from P to C ---
-    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Csv.x, y2: Csv.y, stroke:"#16a34a", "stroke-width":"0.03" }));
+    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Csv.x, y2: Csv.y, stroke:"#16a34a", "stroke-width":"0.01" }));
     dyn.appendChild(el("text", {
       x: (Psv.x + Csv.x)/2 + 0.02,
       y: (Psv.y + Csv.y)/2 - 0.02,
@@ -217,7 +217,7 @@ dyn.appendChild(el("line", {
     }));
 
     // --- H (magenta): segment FJ along the radius ---
-    dyn.appendChild(el("line", { x1: Fsv.x, y1: Fsv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#d946ef", "stroke-width":"0.03" }));
+    dyn.appendChild(el("line", { x1: Fsv.x, y1: Fsv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#d946ef", "stroke-width":"0.01" }));
     dyn.appendChild(el("text", {
       x: (Fsv.x + Jsv.x)/2 + 0.02,
       y: (Fsv.y + Jsv.y)/2 - 0.02,
