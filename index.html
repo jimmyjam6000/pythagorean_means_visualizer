@@ -3,58 +3,131 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pythagorean Means (r=1, a+b=2)</title>
+  <title>Pythagorean Means</title>
+
+  <!-- ====== STYLES ====== -->
   <style>
-    body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#111; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:#fff;
+      color:#111;
+    }
+
+    /* ====== LAYOUT ====== */
     .wrap{
-  max-width:1200px;
-  margin:0 auto;
-  padding:16px;
-  display:flex;
-  gap:16px;
-  align-items:flex-start;
-}
-.wrap > .card:first-child{ flex: 1.25; }
-.wrap > .card:last-child{ flex: 0.75; }
-    .card{ border:1px solid #e6e6e6; border-radius:14px; padding:14px; background:#fff; }
-    h1{ font-size:18px; margin:0 0 8px; }
-    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; }
-    .badge{ font-size:12px; border:1px solid #ddd; border-radius:999px; padding:2px 8px; color:#333; }
-    .controls{ margin-top:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    input[type="range"]{ width:380px; }
-    .kv{ display:grid; grid-template-columns:1fr auto; gap:6px 12px; margin-top:10px; }
-    .eq{ white-space:pre-wrap; font-size:13px; color:#333; line-height:1.55; }
-    .hint{ margin-top:10px; font-size:13px; color:#444; }
-    svg{ width:100%; height:auto; display:block; }
-    /* Force two columns on desktop */
-@media (min-width: 900px){
-  .wrap{
-    grid-template-columns: 1.2fr 0.8fr !important;
-}
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px;
+      display:grid;
+      grid-template-columns: 1fr 360px;   /* left flexible, right fixed */
+      gap:16px;
+      align-items:flex-start;
+      box-sizing:border-box;
+    }
 
+    /* Stack only on truly small screens */
+    @media (max-width: 760px){
+      .wrap{
+        grid-template-columns: 1fr;
+      }
+    }
 
+    /* ====== CARDS ====== */
+    .card{
+      border:1px solid #e6e6e6;
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+      box-sizing:border-box;
+    }
+
+    /* Prevent SVG from blowing up vertically */
+    .card svg{
+      max-height:440px;
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    /* ====== TYPOGRAPHY ====== */
+    h1{
+      font-size:18px;
+      margin:0 0 8px;
+    }
+
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,
+                  "Liberation Mono","Courier New",monospace;
+    }
+
+    .badge{
+      font-size:12px;
+      border:1px solid #ddd;
+      border-radius:999px;
+      padding:2px 8px;
+      color:#333;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:13px;
+      color:#444;
+    }
+
+    /* ====== CONTROLS ====== */
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .controls{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    label{
+      font-size:14px;
+      color:#333;
+    }
+
+    input[type="range"]{
+      width:380px;
+    }
+
+    /* ====== VALUES PANEL ====== */
+    .kv{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:6px 12px;
+      margin-top:10px;
+    }
+
+    .eq{
+      white-space:pre-wrap;
+      font-size:13px;
+      color:#333;
+      line-height:1.55;
+    }
   </style>
 </head>
 
 <body>
 <div class="wrap">
-  <!-- LEFT: diagram -->
+
+  <!-- ===== LEFT: DIAGRAM ===== -->
   <div class="card">
     <div class="row">
-      <h1>Pythagorean Means (radius = 1 so AM = 1)</h1>
+      <h1>Pythagorean Means (radius = 1, so AM = 1)</h1>
       <span class="badge mono">a + b = 2</span>
     </div>
 
-    <!-- Coordinates (math):
-         Circle centered at O=(0,0), radius 1, upper semicircle y>=0.
-         We draw in SVG with y flipped (SVG y down), so use y_svg = -y_math.
-         Diameter endpoints: (-1,0) and (1,0).
-         Split point: P = (x,0) where x = a-1 = 1-b.
-         Top point (where AM meets arc): C = (0,1) => SVG (0,-1).
-         J is top of the vertical sagitta above P: J=(x, sqrt(1-x^2)).
-         Radius R is segment OJ. Drop perpendicular from P to R at F; HM is segment FJ on R.
-    -->
     <svg viewBox="-1.25 -1.25 2.5 1.7" aria-label="Pythagorean means diagram">
       <!-- semicircle + diameter -->
       <path d="M -1 0 A 1 1 0 0 1 1 0" fill="none" stroke="#111" stroke-width="0.02"/>
@@ -72,12 +145,19 @@
     </svg>
 
     <div class="controls">
-      <label for="bRange">Change:</label>
-      <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="0.328" />
+      <label for="bRange">Move b:</label>
+      <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="0.35" />
       <span class="mono" id="abOut"></span>
     </div>
 
-  <!-- RIGHT: values -->
+    <div class="hint">
+      A = arithmetic mean (radius), G = geometric mean (sagitta),
+      Q = quadratic mean (chord to top),
+      H = harmonic mean (segment on radius to sagitta).
+    </div>
+  </div>
+
+  <!-- ===== RIGHT: VALUES ===== -->
   <div class="card">
     <h1>Values & equations</h1>
 
@@ -94,8 +174,10 @@
 
     <div class="eq mono" id="eqBlock"></div>
   </div>
+
 </div>
 
+<!-- ====== SCRIPT ====== -->
 <script>
 (() => {
   const dyn = document.getElementById("dyn");
@@ -122,118 +204,64 @@
   const clear = (node) => { while(node.firstChild) node.removeChild(node.firstChild); };
   const fmt = (x) => (Math.round(x*1000)/1000).toFixed(3);
 
-  // Convert math coords (x, y up) to SVG coords (x, y down)
   const toSvg = (p) => ({ x: p.x, y: -p.y });
 
-  // Fixed points
   const O = { x: 0, y: 0 };
-  const C = { x: 0, y: 1 }; // top point of semicircle (AM radius endpoint)
+  const Ctop = { x: 0, y: 1 };
 
   function update(){
     const b = parseFloat(bRange.value);
     const a = 2 - b;
 
-    // Split point on diameter from (-1,0) to (1,0):
-    // x = -1 + a = a-1 = 1-b
     const x = a - 1;
     const P = { x, y: 0 };
 
-    // Geometric mean sagitta (vertical to arc)
-    const G = Math.sqrt(Math.max(0, 1 - x*x)); // = sqrt(ab)
-    const J = { x, y: G }; // top of the vertical
+    const G = Math.sqrt(Math.max(0, 1 - x*x));
+    const J = { x, y: G };
 
-    // Means
     const AM = 1;
     const GM = Math.sqrt(a*b);
-    const HM = (2*a*b)/(a+b);      // = ab because a+b=2
+    const HM = (2*a*b)/(a+b);
     const QM = Math.sqrt((a*a + b*b)/2);
 
-    // Harmonic construction:
-    // Radius R is line from O to J (direction u = J, and |J|=1 so it's already unit)
-    // Foot from P onto R: F = (P·u) u. Here u=J and P·J = x^2, so F = x^2 * J.
     const F = { x: x*x*x, y: x*x*G };
 
-    // Length along radius from F to J is |FJ| = 1 - x^2 = ab = HM. (Nice consistency check.)
-    // Draw everything
     clear(dyn);
 
-    // a/b label positions (center of each segment)
-    // Left endpoint is -1, right endpoint is +1, split is at x
     aLab.setAttribute("x", (-1 + x)/2);
     bLab.setAttribute("x", (x + 1)/2);
 
-    // Plot key points in SVG coords
     const Osvg = toSvg(O);
-    const Csv = toSvg(C);
-    const Psv = toSvg(P);
-    const Jsv = toSvg(J);
-    const Fsv = toSvg(F);
+    const Csvg = toSvg(Ctop);
+    const Psvg = toSvg(P);
+    const Jsvg = toSvg(J);
+    const Fsvg = toSvg(F);
 
-    // --- downward tick at split point P ---
-dyn.appendChild(el("line", {
-  x1: Psv.x,
-  y1: Psv.y,
-  x2: Psv.x,
-  y2: Psv.y + 0.06,   // downward in SVG coords
-  stroke: "#111",
-  "stroke-width": "0.02"
-}));
+    // A
+    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("text",{ x:0.04,y:-0.55,fill:"#111","font-size":"0.14",class:"mono"})).textContent="A";
 
+    // G
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("text",{ x:Jsvg.x+0.03,y:(Psvg.y+Jsvg.y)/2,fill:"#111","font-size":"0.14",class:"mono"})).textContent="G";
 
-    // --- A (red): radius from O to C ---
-    dyn.appendChild(el("line", { x1: Osvg.x, y1: Osvg.y, x2: Csv.x, y2: Csv.y, stroke:"#e11d48", "stroke-width":"0.01" }));
-    dyn.appendChild(el("text", { x: 0.04, y: -0.55, fill:"#e11d48", "font-size":"0.14", class:"mono" })).textContent = "A";
+    // Q
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("text",{ x:(Psvg.x+Csvg.x)/2+0.02,y:(Psvg.y+Csvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="Q";
 
-    // --- G (blue): vertical from P to J ---
-    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#2563eb", "stroke-width":"0.01" }));
-    dyn.appendChild(el("text", { x: Jsv.x + 0.03, y: (Psv.y + Jsv.y)/2, fill:"#2563eb", "font-size":"0.14", class:"mono" })).textContent = "G";
+    // helpers
+    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.015"}));
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Fsvg.x,y2:Fsvg.y, stroke:"#111","stroke-width":"0.015"}));
 
-    // --- Q (green): segment from P to C ---
-    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Csv.x, y2: Csv.y, stroke:"#16a34a", "stroke-width":"0.01" }));
-    dyn.appendChild(el("text", {
-      x: (Psv.x + Csv.x)/2 + 0.02,
-      y: (Psv.y + Csv.y)/2 - 0.02,
-      fill:"#16a34a", "font-size":"0.14", class:"mono"
-    })).textContent = "Q";
+    // H
+    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("text",{ x:(Fsvg.x+Jsvg.x)/2+0.02,y:(Fsvg.y+Jsvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="H";
 
-    // --- Harmonic construction (black helpers) ---
-    // Radius R = OJ
-    dyn.appendChild(el("line", { x1: Osvg.x, y1: Osvg.y, x2: Jsv.x, y2: Jsv.y, stroke:"#111", "stroke-width":"0.015" }));
-    // Perpendicular from P to R hits at F: draw PF
-    dyn.appendChild(el("line", { x1: Psv.x, y1: Psv.y, x2: Fsv.x, y2: Fsv.y, stroke:"#111", "stroke-width":"0.015" }));
+    // split tick
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Psvg.x,y2:Psvg.y+0.06, stroke:"#111","stroke-width":"0.02"}));
 
-    // Right-angle marker at F between PF and FJ (i.e., PF ⟂ R)
-    // Build a small square using direction along R and direction along PF
-    const ux = (J.x - O.x), uy = (J.y - O.y); // along radius (math)
-    const vx = (P.x - F.x), vy = (P.y - F.y); // along PF (math)
-    const nu = Math.hypot(ux, uy) || 1;
-    const nv = Math.hypot(vx, vy) || 1;
-    const u = { x: ux/nu, y: uy/nu };
-    const v = { x: vx/nv, y: vy/nv };
-    const s = 0.07; // size in math units
+    dyn.appendChild(el("circle",{ cx:Psvg.x,cy:Psvg.y,r:"0.015",fill:"#111"}));
 
-    const r1 = { x: F.x + u.x*s, y: F.y + u.y*s };
-    const r2 = { x: r1.x + v.x*s, y: r1.y + v.y*s };
-    const r3 = { x: F.x + v.x*s, y: F.y + v.y*s };
-    const R1 = toSvg(r1), R2 = toSvg(r2), R3 = toSvg(r3);
-
-    dyn.appendChild(el("path", {
-      d: `M ${R1.x} ${R1.y} L ${R2.x} ${R2.y} L ${R3.x} ${R3.y}`,
-      fill:"none", stroke:"#111", "stroke-width":"0.01"
-    }));
-
-    // --- H (magenta): segment FJ along the radius ---
-    dyn.appendChild(el("line", { x1: Fsv.x, y1: Fsv.y, x2: Jsv.x, y2: Jsv.y, stroke:"#d946ef", "stroke-width":"0.01" }));
-    dyn.appendChild(el("text", {
-      x: (Fsv.x + Jsv.x)/2 + 0.02,
-      y: (Fsv.y + Jsv.y)/2 - 0.02,
-      fill:"#d946ef", "font-size":"0.14", class:"mono"
-    })).textContent = "H";
-
-    // mark P
-    dyn.appendChild(el("circle", { cx: Psv.x, cy: Psv.y, r:"0.015", fill:"#111" }));
-
-    // --- UI values ---
     abOut.textContent = `b=${fmt(b)} (a=${fmt(a)})`;
     aVal.textContent = fmt(a);
     bVal.textContent = fmt(b);
@@ -243,22 +271,13 @@ dyn.appendChild(el("line", {
     qmVal.textContent = fmt(QM);
 
     eqBlock.textContent =
-`Given a + b = 2 (diameter = 2) and radius = 1:
-
-Arithmetic Mean = A (red) = (a + b)/2 = 1
-
-Geometric Mean = G (green) = √(ab)
-(also G = √(1 - x²) where x = a - 1)
-
-HM = H = 2ab/(a + b)
-(equal to ab in a unit circle diameter = 2)
-
-QM = Q = √((a² + b²)/2)
-(also Q = √(1 + x²) where x = a - 1)
-`;
+`AM = (a + b)/2 = 1
+GM = √(ab)
+HM = 2ab/(a+b) = ab
+QM = √((a² + b²)/2)`;
   }
 
-  bRange.addEventListener("input", update, { passive:true });
+  bRange.addEventListener("input", update);
   update();
 })();
 </script>
