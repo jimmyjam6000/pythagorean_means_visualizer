@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pythagorean Means (Wikipedia-style + helpers, r=1)</title>
+  <title>Wikipedia-style Pythagorean Means (r=1, AM=1) + Helpers</title>
   <style>
     body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#111; }
     .wrap{ max-width:1100px; margin:0 auto; padding:16px; display:grid; grid-template-columns:1.2fr 0.8fr; gap:16px; }
@@ -20,63 +20,67 @@
     .hint{ margin-top:10px; font-size:13px; color:#444; }
   </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="row" style="justify-content:space-between;">
-      <h1>Wikipedia-style Pythagorean Means (radius = 1, so AM = 1)</h1>
-      <span class="badge mono">a + b = 2</span>
+  <div class="wrap">
+    <!-- LEFT: diagram -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <h1>Wikipedia-style Pythagorean Means (radius = 1, so AM = 1)</h1>
+        <span class="badge mono">a + b = 2</span>
+      </div>
+
+      <!-- Coordinates:
+           Diameter from x=0 to x=2. Center O=(1,0). Top T=(1,-1) (SVG y down).
+           Upper semicircle: (x-1)^2 + y^2 = 1 with y <= 0.
+      -->
+      <svg viewBox="-0.2 -1.25 2.4 1.48" aria-label="Pythagorean means (Wikipedia-style)">
+        <!-- baseline + semicircle -->
+        <line x1="0" y1="0" x2="2" y2="0" stroke="#111" stroke-width="0.02"/>
+        <path d="M 0 0 A 1 1 0 0 1 2 0" fill="none" stroke="#111" stroke-width="0.02"/>
+
+        <!-- end ticks -->
+        <line x1="0" y1="0" x2="0" y2="0.06" stroke="#111" stroke-width="0.02"/>
+        <line x1="2" y1="0" x2="2" y2="0.06" stroke="#111" stroke-width="0.02"/>
+
+        <!-- dynamic drawing -->
+        <g id="dyn"></g>
+
+        <!-- a and b labels under the diameter -->
+        <text id="aLabel" x="0.5" y="0.14" class="mono" font-size="0.09" fill="#000" text-anchor="middle">a</text>
+        <text id="bLabelSvg" x="1.5" y="0.14" class="mono" font-size="0.09" fill="#000" text-anchor="middle">b</text>
+      </svg>
+
+      <div class="row" style="margin-top:10px;">
+        <label for="bRange">Move b:</label>
+        <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="1.00" />
+        <span class="mono" id="abReadout"></span>
+      </div>
+
+      <div class="hint">
+        Black helper construction: let <span class="mono">O=(1,0)</span> (center) and <span class="mono">C=(a,0)</span> (split).
+        Draw the Thales circle with diameter <span class="mono">OC</span>. It meets the chord <span class="mono">TC</span> at <span class="mono">P</span>,
+        so <span class="mono">∠OPC = 90°</span>.
+      </div>
     </div>
 
-    <!-- Coordinate choice (matches your coordinate proof):
-         Diameter from x=0 to x=2. Center O=(1,0). Top T=(1,-1) (SVG y down).
-         Upper semicircle: (x-1)^2 + y^2 = 1 with y <= 0.
-    -->
-    <svg viewBox="-0.2 -1.25 2.4 1.48" aria-label="Pythagorean means (Wikipedia-style)">
-      <!-- baseline + semicircle -->
-      <line x1="0" y1="0" x2="2" y2="0" stroke="#111" stroke-width="0.02"/>
-      <path d="M 0 0 A 1 1 0 0 1 2 0" fill="none" stroke="#111" stroke-width="0.02"/>
+    <!-- RIGHT: values -->
+    <div class="card">
+      <h1>Values & formulas</h1>
 
-      <!-- end ticks -->
-      <line x1="0" y1="0" x2="0" y2="0.06" stroke="#111" stroke-width="0.02"/>
-      <line x1="2" y1="0" x2="2" y2="0.06" stroke="#111" stroke-width="0.02"/>
+      <div class="kv mono">
+        <div>a</div><div id="aVal"></div>
+        <div>b</div><div id="bVal"></div>
+        <div>A (AM)</div><div id="AVal"></div>
+        <div>G (GM)</div><div id="GVal"></div>
+        <div>H (HM)</div><div id="HVal"></div>
+        <div>Q (QM/RMS)</div><div id="QVal"></div>
+      </div>
 
-      <g id="dyn"></g>
-
-      <!-- a and b labels under the diameter -->
-      <text id="aLabel" x="0.5" y="0.14" class="mono" font-size="0.09" fill="#000" text-anchor="middle">a</text>
-      <text id="bLabelSvg" x="1.5" y="0.14" class="mono" font-size="0.09" fill="#000" text-anchor="middle">b</text>
-    </svg>
-
-    <div class="row" style="margin-top:10px;">
-      <label for="bRange">Move b:</label>
-      <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="1.00" />
-      <span class="mono" id="abReadout"></span>
-    </div>
-
-    <div class="hint">
-      Black helper triangle: Let <span class="mono">O=(1,0)</span> (center) and <span class="mono">C=(a,0)</span> (split).
-      The circle with diameter <span class="mono">OC</span> meets the chord <span class="mono">TC</span> at point <span class="mono">P</span>,
-      and Thales’ theorem gives a right angle at <span class="mono">P</span>.
+      <hr style="border:none;border-top:1px solid #eee; margin:12px 0;" />
+      <div class="eq mono" id="eqBlock"></div>
     </div>
   </div>
-
-<div class="card">
-  <h1>Values & formulas</h1>
-
-  <div class="kv mono">
-    <div>a</div><div id="aVal"></div>
-    <div>b</div><div id="bVal"></div>
-    <div>A (AM)</div><div id="AVal"></div>
-    <div>G (GM)</div><div id="GVal"></div>
-    <div>H (HM)</div><div id="HVal"></div>
-    <div>Q (QM/RMS)</div><div id="QVal"></div>
-  </div>
-
-  <hr style="border:none;border-top:1px solid #eee; margin:12px 0;" />
-
-  <div class="eq mono" id="eqBlock"></div>
-</div>
 
 <script>
 (() => {
@@ -96,133 +100,99 @@
   const QVal = document.getElementById("QVal");
   const eqBlock = document.getElementById("eqBlock");
 
-  const el = (name, attrs={}) => {
+  function el(name, attrs = {}) {
     const n = document.createElementNS(svgNS, name);
-    for (const [k,v] of Object.entries(attrs)) n.setAttribute(k, v);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
     return n;
-  };
-  const clear = (node) => { while(node.firstChild) node.removeChild(node.firstChild); };
-  const fmt = (x) => (Math.round(x*1000)/1000).toFixed(3);
+  }
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  function fmt(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
 
-  // Fixed circle: center O=(1,0), radius 1
+  // Fixed semicircle: center O=(1,0), radius 1, top T=(1,-1) (SVG y down)
   const O = { x: 1, y: 0 };
-  const r = 1;
-  const T = { x: 1, y: -1 }; // top of semicircle (upper: negative y in SVG)
+  const T = { x: 1, y: -1 };
 
-  function yOnUpperArc(x){
-    const v = 1 - (x - 1)*(x - 1);
+  function yOnUpperArc(x) {
+    const v = 1 - (x - 1) * (x - 1);
     return -Math.sqrt(Math.max(0, v));
   }
 
-  // Intersection of a line (through P1,P2) with a circle (center C, radius R).
-  // Returns the intersection point with y <= 0 if possible (upper).
-  function intersectLineCircleUpper(P1, P2, C, R){
-    // Parametric line: P(t)=P1 + t*(d)
+  // Intersect line P1->P2 with circle (center C, radius R); choose an upper-half point.
+  function intersectLineCircleUpper(P1, P2, C, R) {
     const dx = P2.x - P1.x;
     const dy = P2.y - P1.y;
-
-    // Solve |P(t)-C|^2 = R^2
     const fx = P1.x - C.x;
     const fy = P1.y - C.y;
 
-    const A = dx*dx + dy*dy;
-    const B = 2*(fx*dx + fy*dy);
-    const CC = fx*fx + fy*fy - R*R;
+    const A = dx * dx + dy * dy;
+    const B = 2 * (fx * dx + fy * dy);
+    const CC = fx * fx + fy * fy - R * R;
 
-    const disc = B*B - 4*A*CC;
+    const disc = B * B - 4 * A * CC;
     if (disc < 0) return null;
 
     const s = Math.sqrt(disc);
-    const t1 = (-B + s) / (2*A);
-    const t2 = (-B - s) / (2*A);
+    const t1 = (-B + s) / (2 * A);
+    const t2 = (-B - s) / (2 * A);
 
-    const I1 = { x: P1.x + t1*dx, y: P1.y + t1*dy };
-    const I2 = { x: P1.x + t2*dx, y: P1.y + t2*dy };
+    const I1 = { x: P1.x + t1 * dx, y: P1.y + t1 * dy };
+    const I2 = { x: P1.x + t2 * dx, y: P1.y + t2 * dy };
 
-    // Choose the intersection that lies in the upper half (y <= 0),
-    // and is not trivially the endpoint C if possible.
     const candidates = [I1, I2].filter(p => p.y <= 1e-9);
     if (candidates.length === 0) return null;
 
-    // Prefer the one that isn't extremely close to P2 (to avoid picking C itself)
-    const dist2 = (p,q)=> (p.x-q.x)**2 + (p.y-q.y)**2;
-    candidates.sort((p,q)=> dist2(p,P2) - dist2(q,P2));
-    // That sort puts the closer-to-C first; we often want the OTHER one.
-    // So take the farthest from C among candidates:
-    candidates.sort((p,q)=> dist2(q,P2) - dist2(p,P2));
+    // pick the intersection that isn't C (if possible)
+    const dist2 = (p, q) => (p.x - q.x) ** 2 + (p.y - q.y) ** 2;
+    candidates.sort((p, q) => dist2(q, P2) - dist2(p, P2)); // farthest from C first
     return candidates[0];
   }
 
-  // Right-angle marker at vertex V between rays to A and B
-  function rightAngleMarker(V, A, B, size=0.06){
-    // Build two unit vectors from V toward A and B
+  // Right-angle marker at vertex V between rays toward A and B
+  function rightAngleMarker(V, A, B, size = 0.06) {
     const ux1 = A.x - V.x, uy1 = A.y - V.y;
     const ux2 = B.x - V.x, uy2 = B.y - V.y;
     const n1 = Math.hypot(ux1, uy1) || 1;
     const n2 = Math.hypot(ux2, uy2) || 1;
-    const v1 = { x: ux1/n1, y: uy1/n1 };
-    const v2 = { x: ux2/n2, y: uy2/n2 };
+    const v1 = { x: ux1 / n1, y: uy1 / n1 };
+    const v2 = { x: ux2 / n2, y: uy2 / n2 };
 
-    const p1 = { x: V.x + v1.x*size, y: V.y + v1.y*size };
-    const p2 = { x: p1.x + v2.x*size, y: p1.y + v2.y*size };
-    const p3 = { x: V.x + v2.x*size, y: V.y + v2.y*size };
+    const p1 = { x: V.x + v1.x * size, y: V.y + v1.y * size };
+    const p2 = { x: p1.x + v2.x * size, y: p1.y + v2.y * size };
+    const p3 = { x: V.x + v2.x * size, y: V.y + v2.y * size };
 
     return `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${p3.x} ${p3.y}`;
   }
 
-  function update(){
+  function update() {
     const b = parseFloat(bRange.value);
-    const a = 2 - b;           // enforce AM=1
-    const A = 1;               // arithmetic mean
-    const G = Math.sqrt(a*b);  // geometric mean
-    const H = (2*a*b)/(a+b);   // harmonic mean (here equals ab)
-    const Q = Math.sqrt((a*a + b*b)/2); // quadratic mean / RMS
+    const a = 2 - b;                // enforce AM=1
 
-    const C = { x: a, y: 0 };     // split point on diameter [0,2]
-    const P_G = { x: C.x, y: yOnUpperArc(C.x) }; // top of blue vertical
+    const A = 1;                    // arithmetic mean
+    const G = Math.sqrt(a * b);     // geometric mean
+    const H = (2 * a * b) / (a + b);// harmonic mean (equals ab since a+b=2)
+    const Q = Math.sqrt((a * a + b * b) / 2); // quadratic mean / RMS
 
-    // Q chord is TC
-    const chordQ1 = T, chordQ2 = C;
+    const C = { x: a, y: 0 };       // split point on diameter [0,2]
+    const P_G = { x: C.x, y: yOnUpperArc(C.x) }; // vertical to arc
 
-    // H chord: choose a point on the upper arc so that |C P_H| = H
-    // Intersect the fixed circle centered at C with radius H with the semicircle arc:
-    // Solve:
-    // (x-1)^2 + y^2 = 1
-    // (x-a)^2 + y^2 = H^2
-    // => x = (a^2 - H^2)/(2(a-1))  (when a != 1)
-    let P_H = null;
-    if (Math.abs(a - 1) < 1e-6){
-      // symmetric case: a=b=1 => H=1, take the top T as a nice stable choice
+    // H chord: point on upper arc at distance H from C (when possible)
+    let P_H;
+    if (Math.abs(a - 1) < 1e-6) {
+      // symmetric case a=b=1 => H=1, chord CT is fine
       P_H = { x: 1, y: -1 };
     } else {
-      const x = (a*a - H*H) / (2*(a - 1));
+      const x = (a * a - H * H) / (2 * (a - 1));
       P_H = { x, y: yOnUpperArc(x) };
     }
-    
-// --- Thales circle (dashed) ---
-// Circle with diameter OC
-if (Rth > 1e-6){
-  dyn.appendChild(el("circle",{
-    cx: Mth.x,
-    cy: Mth.y,
-    r: Rth,
-    fill: "none",
-    stroke: "#111",
-    "stroke-width": "0.012",
-    "stroke-dasharray": "0.04 0.04",
-    "opacity": "0.6"
-  }));
-}
 
-    // --- Black helper triangle (Thales) ---
-    // Thales circle has diameter OC, center Mth and radius Rth
-    const Mth = { x: (O.x + C.x)/2, y: 0 };
-    const Rth = Math.abs(C.x - O.x)/2;
+    // Thales circle (diameter OC)
+    const Mth = { x: (O.x + C.x) / 2, y: 0 };
+    const Rth = Math.abs(C.x - O.x) / 2;
 
-    // Find P = intersection of chord TC with Thales circle (upper)
+    // P = intersection of chord TC with Thales circle
     const P = (Rth < 1e-6) ? null : intersectLineCircleUpper(T, C, Mth, Rth);
 
-    // Update labels
+    // Update UI text
     abReadout.textContent = `b=${fmt(b)} (a=${fmt(a)})`;
     aVal.textContent = fmt(a);
     bVal.textContent = fmt(b);
@@ -236,65 +206,78 @@ if (Rth > 1e-6){
       `GM G = √(ab) = ${fmt(G)}\n` +
       `HM H = 2ab/(a+b) = ${fmt(H)}\n` +
       `QM Q = √((a² + b²)/2) = ${fmt(Q)}\n` +
-      `RMS chord: |TC| = Q\n`;
+      `Chord TC has length Q (RMS)\n`;
 
     // Position bottom a/b labels
-    aLabel.setAttribute("x", (0 + a)/2);
-    bLabelSvg.setAttribute("x", (a + 2)/2);
+    aLabel.setAttribute("x", (0 + a) / 2);
+    bLabelSvg.setAttribute("x", (a + 2) / 2);
 
-    // redraw
+    // Redraw all dynamic graphics
     clear(dyn);
 
-    // split tick
-    dyn.appendChild(el("line",{x1:C.x,y1:0,x2:C.x,y2:0.06,stroke:"#111","stroke-width":"0.02"}));
+    // Split tick
+    dyn.appendChild(el("line", { x1: C.x, y1: 0, x2: C.x, y2: 0.06, stroke: "#111", "stroke-width": "0.02" }));
+
+    // --- Thales circle (dashed) (draw FIRST so it's behind) ---
+    if (Rth > 1e-6) {
+      dyn.appendChild(el("circle", {
+        cx: Mth.x,
+        cy: Mth.y,
+        r: Rth,
+        fill: "none",
+        stroke: "#111",
+        "stroke-width": "0.012",
+        "stroke-dasharray": "0.04 0.04",
+        "opacity": "0.55"
+      }));
+    }
 
     // Points O, C, T
-    dyn.appendChild(el("circle",{cx:O.x,cy:O.y,r:0.016,fill:"#111"}));
-    dyn.appendChild(el("circle",{cx:C.x,cy:C.y,r:0.016,fill:"#111"}));
-    dyn.appendChild(el("circle",{cx:T.x,cy:T.y,r:0.016,fill:"#111"}));
+    dyn.appendChild(el("circle", { cx: O.x, cy: O.y, r: 0.016, fill: "#111" }));
+    dyn.appendChild(el("circle", { cx: C.x, cy: C.y, r: 0.016, fill: "#111" }));
+    dyn.appendChild(el("circle", { cx: T.x, cy: T.y, r: 0.016, fill: "#111" }));
 
     // A (red): radius OT
-    dyn.appendChild(el("line",{x1:O.x,y1:O.y,x2:T.x,y2:T.y,stroke:"#e11d48","stroke-width":"0.03"}));
-    dyn.appendChild(el("text",{x:O.x+0.03,y:-0.55,fill:"#e11d48","font-size":"0.12",class:"mono"})).textContent="A";
+    dyn.appendChild(el("line", { x1: O.x, y1: O.y, x2: T.x, y2: T.y, stroke: "#e11d48", "stroke-width": "0.03" }));
+    dyn.appendChild(el("text", { x: O.x + 0.03, y: -0.55, fill: "#e11d48", "font-size": "0.12", class: "mono" })).textContent = "A";
 
     // G (blue): vertical from C to arc
-    dyn.appendChild(el("line",{x1:C.x,y1:0,x2:P_G.x,y2:P_G.y,stroke:"#2563eb","stroke-width":"0.03"}));
-    dyn.appendChild(el("text",{x:C.x+0.03,y:(P_G.y)/2,fill:"#2563eb","font-size":"0.12",class:"mono"})).textContent="G";
+    dyn.appendChild(el("line", { x1: C.x, y1: 0, x2: P_G.x, y2: P_G.y, stroke: "#2563eb", "stroke-width": "0.03" }));
+    dyn.appendChild(el("text", { x: C.x + 0.03, y: (P_G.y) / 2, fill: "#2563eb", "font-size": "0.12", class: "mono" })).textContent = "G";
 
     // Q (green): chord T->C
-    dyn.appendChild(el("line",{x1:T.x,y1:T.y,x2:C.x,y2:C.y,stroke:"#16a34a","stroke-width":"0.03"}));
-    dyn.appendChild(el("text",{
-      x:(T.x+C.x)/2 + 0.02,
-      y:(T.y+C.y)/2 - 0.02,
-      fill:"#16a34a","font-size":"0.12",class:"mono"
-    })).textContent="Q";
+    dyn.appendChild(el("line", { x1: T.x, y1: T.y, x2: C.x, y2: C.y, stroke: "#16a34a", "stroke-width": "0.03" }));
+    dyn.appendChild(el("text", {
+      x: (T.x + C.x) / 2 + 0.02,
+      y: (T.y + C.y) / 2 - 0.02,
+      fill: "#16a34a", "font-size": "0.12", class: "mono"
+    })).textContent = "Q";
 
     // H (magenta): chord from C to P_H (length = HM)
-    dyn.appendChild(el("line",{x1:C.x,y1:C.y,x2:P_H.x,y2:P_H.y,stroke:"#d946ef","stroke-width":"0.03"}));
-    dyn.appendChild(el("text",{
-      x:(C.x+P_H.x)/2 + 0.02,
-      y:(C.y+P_H.y)/2 - 0.02,
-      fill:"#d946ef","font-size":"0.12",class:"mono"
-    })).textContent="H";
+    dyn.appendChild(el("line", { x1: C.x, y1: C.y, x2: P_H.x, y2: P_H.y, stroke: "#d946ef", "stroke-width": "0.03" }));
+    dyn.appendChild(el("text", {
+      x: (C.x + P_H.x) / 2 + 0.02,
+      y: (C.y + P_H.y) / 2 - 0.02,
+      fill: "#d946ef", "font-size": "0.12", class: "mono"
+    })).textContent = "H";
 
-    // --- Black helper segments (Thales triangle) ---
-    if (P){
-      // segments OP and PC
-      dyn.appendChild(el("line",{x1:O.x,y1:O.y,x2:P.x,y2:P.y,stroke:"#111","stroke-width":"0.015"}));
-      dyn.appendChild(el("line",{x1:P.x,y1:P.y,x2:C.x,y2:C.y,stroke:"#111","stroke-width":"0.015"}));
+    // Black helper triangle OP and PC + right angle at P
+    if (P) {
+      dyn.appendChild(el("line", { x1: O.x, y1: O.y, x2: P.x, y2: P.y, stroke: "#111", "stroke-width": "0.015" }));
+      dyn.appendChild(el("line", { x1: P.x, y1: P.y, x2: C.x, y2: C.y, stroke: "#111", "stroke-width": "0.015" }));
 
-      // right-angle marker at P between rays toward O and C
-      dyn.appendChild(el("path",{
+      dyn.appendChild(el("path", {
         d: rightAngleMarker(P, O, C, 0.06),
-        fill:"none", stroke:"#111", "stroke-width":"0.01"
+        fill: "none",
+        stroke: "#111",
+        "stroke-width": "0.01"
       }));
 
-      // draw point P
-      dyn.appendChild(el("circle",{cx:P.x,cy:P.y,r:0.012,fill:"#111"}));
+      dyn.appendChild(el("circle", { cx: P.x, cy: P.y, r: 0.012, fill: "#111" }));
     }
   }
 
-  bRange.addEventListener("input", update, { passive:true });
+  bRange.addEventListener("input", update, { passive: true });
   update();
 })();
 </script>
