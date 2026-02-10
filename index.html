@@ -52,38 +52,36 @@
         <span class="badge mono">a + b = 2 ⇒ AM = 1</span>
       </div>
 
-      <!-- We'll draw in "math coordinates" by flipping y with a transform -->
-      <svg id="viz" viewBox="-1.25 -0.25 2.5 1.95" aria-label="Means visualization">
-        <!-- Flip y so positive is up -->
-        <g id="math" transform="scale(1,-1) translate(0,-1.5)">
-          <!-- Axes (light) -->
-          <line x1="-1.2" y1="0" x2="1.2" y2="0" stroke="#eee" stroke-width="0.01"/>
-          <line x1="0" y1="-0.2" x2="0" y2="1.6" stroke="#eee" stroke-width="0.01"/>
+      <!-- Normal SVG coords: +y is DOWN.
+           We'll draw the *upper* semicircle using negative y. -->
+      <svg id="viz" viewBox="-1.25 -1.65 2.5 2.0" aria-label="Means visualization">
+        <!-- axes (light) -->
+        <line x1="-1.2" y1="0" x2="1.2" y2="0" stroke="#eee" stroke-width="0.01"/>
+        <line x1="0" y1="-1.55" x2="0" y2="0.25" stroke="#eee" stroke-width="0.01"/>
 
-          <!-- Upper semicircle of radius 1: y = +sqrt(1-x^2), from x=-1 to x=1 -->
-          <path d="M -1 0 A 1 1 0 0 1 1 0" fill="none" stroke="#111" stroke-width="0.02"/>
+        <!-- Upper semicircle: from (-1,0) to (1,0) with sweep flag 0 => arc goes "up" (negative y) -->
+        <path d="M -1 0 A 1 1 0 0 0 1 0" fill="none" stroke="#111" stroke-width="0.02"/>
 
-          <!-- Diameter -->
-          <line x1="-1" y1="0" x2="1" y2="0" stroke="#111" stroke-width="0.03"/>
+        <!-- diameter -->
+        <line x1="-1" y1="0" x2="1" y2="0" stroke="#111" stroke-width="0.03"/>
 
-          <!-- Dynamic elements -->
-          <g id="dynamic"></g>
+        <!-- dynamic elements -->
+        <g id="dynamic"></g>
 
-          <!-- label -->
-          <text x="-1.18" y="1.45" font-size="0.09" class="mono" fill="#111">Upper semicircle (r=1)</text>
-        </g>
+        <text x="-1.18" y="-1.45" font-size="0.09" class="mono" fill="#111">Upper semicircle (r=1)</text>
       </svg>
 
       <div class="row" style="margin-top:10px;">
         <label for="bRange">Move b:</label>
         <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="1.00"/>
+        <span class="mono"></span>
         <span class="mono" id="bLabel"></span>
       </div>
 
       <div class="hint">
-        Geometric-mean construction: split the diameter into lengths <span class="mono">a</span> and <span class="mono">b</span>.
+        Geometric mean construction: split the diameter into <span class="mono">a</span> and <span class="mono">b</span>.
         The perpendicular from the split point up to the semicircle has length
-        <span class="mono">GM = √(ab)</span>, and it always stays inside the semicircle.
+        <span class="mono">GM = √(ab)</span> (and it never leaves the semicircle).
       </div>
     </div>
 
@@ -104,9 +102,8 @@
       <div class="eq mono" id="eqBlock"></div>
 
       <div class="hint">
-        Here we enforce <span class="mono">a + b = 2</span> so the arithmetic mean is always 1.
-        The harmonic mean becomes <span class="mono">HM = 2ab/(a+b) = ab</span>.
-        The quadratic mean can exceed 1 (that’s normal): <span class="mono">QM ≥ AM</span>.
+        With <span class="mono">a+b=2</span>, we have <span class="mono">AM=1</span> always and
+        <span class="mono">HM=2ab/(a+b)=ab</span>. Also <span class="mono">QM ≥ AM</span>, so QM can exceed 1.
       </div>
     </div>
   </div>
@@ -139,17 +136,19 @@
     const a = 2 - b;
 
     const AM = (a + b)/2;              // = 1
-    const GM = Math.sqrt(a*b);         // <= 1 always under constraint
+    const GM = Math.sqrt(a*b);         // <= 1
     const HM = (2*a*b)/(a+b);          // = ab since a+b=2
     const QM = Math.sqrt((a*a + b*b)/2);
 
-    // Geometry:
-    // Diameter is from -1 to +1. Split point M at xM = -1 + a = 1 - b
+    // Split point M on diameter [-1,1]
     const xM = 1 - b;
-    // On upper semicircle: y = sqrt(1 - x^2) (will be >=0)
-    const yGM = Math.sqrt(Math.max(0, 1 - xM*xM)); // equals sqrt(ab)
 
-    // UI text
+    // Upper semicircle in SVG coords is negative y:
+    // y = -sqrt(1 - x^2)
+    const yTop = -Math.sqrt(Math.max(0, 1 - xM*xM)); // equals -sqrt(ab)
+    const GMlen = -yTop; // positive length
+
+    // UI values
     bLabel.textContent = `b = ${fmt(b)} (a = ${fmt(a)})`;
     aVal.textContent = fmt(a);
     bVal.textContent = fmt(b);
@@ -169,44 +168,47 @@
 
     // Split point M
     dyn.appendChild(el("circle", { cx:xM, cy:0, r:0.03, fill:"#111" }));
-    dyn.appendChild(el("text", { x:xM+0.03, y:0.10, "font-size":"0.09", fill:"#111", class:"mono" })).textContent = "M";
+    dyn.appendChild(el("text", { x:xM+0.03, y:-0.08, "font-size":"0.09", fill:"#111", class:"mono" }))
+      .textContent = "M";
 
     // Segment a (left): -1 to xM
     dyn.appendChild(el("line", { x1:-1, y1:0, x2:xM, y2:0, stroke:"#7c3aed", "stroke-width":"0.05", "stroke-linecap":"round" }));
-    dyn.appendChild(el("text", { x:(-1+xM)/2, y:-0.12, "font-size":"0.10", fill:"#7c3aed", class:"mono" })).textContent = `a=${fmt(a)}`;
+    dyn.appendChild(el("text", { x:(-1+xM)/2, y:0.14, "font-size":"0.10", fill:"#7c3aed", class:"mono" }))
+      .textContent = `a=${fmt(a)}`;
 
     // Segment b (right): xM to 1
     dyn.appendChild(el("line", { x1:xM, y1:0, x2:1, y2:0, stroke:"#06b6d4", "stroke-width":"0.05", "stroke-linecap":"round" }));
-    dyn.appendChild(el("text", { x:(xM+1)/2, y:-0.12, "font-size":"0.10", fill:"#06b6d4", class:"mono" })).textContent = `b=${fmt(b)}`;
+    dyn.appendChild(el("text", { x:(xM+1)/2, y:0.14, "font-size":"0.10", fill:"#06b6d4", class:"mono" }))
+      .textContent = `b=${fmt(b)}`;
 
-    // GM: perpendicular from M to semicircle (up)
-    dyn.appendChild(el("line", { x1:xM, y1:0, x2:xM, y2:yGM, stroke:"#16a34a", "stroke-width":"0.04", "stroke-linecap":"round" }));
-    dyn.appendChild(el("circle", { cx:xM, cy:yGM, r:0.028, fill:"#16a34a" }));
-    dyn.appendChild(el("text", { x:xM+0.05, y:yGM+0.05, "font-size":"0.10", fill:"#16a34a", class:"mono" }))
+    // GM: perpendicular from M to semicircle (upward: negative y)
+    dyn.appendChild(el("line", { x1:xM, y1:0, x2:xM, y2:yTop, stroke:"#16a34a", "stroke-width":"0.04", "stroke-linecap":"round" }));
+    dyn.appendChild(el("circle", { cx:xM, cy:yTop, r:0.028, fill:"#16a34a" }));
+    dyn.appendChild(el("text", { x:xM+0.05, y:yTop-0.03, "font-size":"0.10", fill:"#16a34a", class:"mono" }))
       .textContent = `GM=${fmt(GM)}`;
 
-    // AM: fixed radius 1, show as vertical from origin to (0,1)
-    dyn.appendChild(el("line", { x1:0, y1:0, x2:0, y2:1, stroke:"#f59e0b", "stroke-width":"0.035", "stroke-linecap":"round" }));
-    dyn.appendChild(el("text", { x:0.05, y:1.06, "font-size":"0.10", fill:"#f59e0b", class:"mono" })).textContent = "AM=1";
+    // AM: fixed radius 1, show from origin up to y=-1
+    dyn.appendChild(el("line", { x1:0, y1:0, x2:0, y2:-1, stroke:"#f59e0b", "stroke-width":"0.035", "stroke-linecap":"round" }));
+    dyn.appendChild(el("text", { x:0.05, y:-1.05, "font-size":"0.10", fill:"#f59e0b", class:"mono" }))
+      .textContent = "AM=1";
 
     // HM: horizontal segment on +x axis from origin to (HM,0)
-    // Since a+b=2, HM=ab is in (0,1].
     dyn.appendChild(el("line", { x1:0, y1:0, x2:HM, y2:0, stroke:"#dc2626", "stroke-width":"0.035", "stroke-linecap":"round" }));
-    dyn.appendChild(el("text", { x:Math.min(HM+0.05, 1.05), y:0.12, "font-size":"0.10", fill:"#dc2626", class:"mono" }))
+    dyn.appendChild(el("text", { x:Math.min(HM+0.05, 1.05), y:-0.10, "font-size":"0.10", fill:"#dc2626", class:"mono" }))
       .textContent = `HM=${fmt(HM)}`;
 
-    // QM: vertical dashed segment from origin to QM (can exceed 1)
+    // QM: vertical dashed segment from origin up to y = -QM (can go above the semicircle)
     dyn.appendChild(el("line", {
-      x1:-0.15, y1:0, x2:-0.15, y2:QM,
+      x1:-0.15, y1:0, x2:-0.15, y2:-QM,
       stroke:"#2563eb", "stroke-width":"0.03", "stroke-linecap":"round",
       "stroke-dasharray":"0.05 0.05"
     }));
-    dyn.appendChild(el("text", { x:-0.55, y:QM+0.05, "font-size":"0.10", fill:"#2563eb", class:"mono" }))
+    dyn.appendChild(el("text", { x:-0.62, y:-QM-0.02, "font-size":"0.10", fill:"#2563eb", class:"mono" }))
       .textContent = `QM=${fmt(QM)}`;
 
-    // sanity note (tiny)
-    dyn.appendChild(el("text", { x:-1.18, y:-0.18, "font-size":"0.085", fill:"#666", class:"mono" }))
-      .textContent = `y(M)=√(1−x_M²)=√(ab) ⇒ GM stays within semicircle`;
+    // sanity check (tiny)
+    dyn.appendChild(el("text", { x:-1.18, y:0.22, "font-size":"0.085", fill:"#666", class:"mono" }))
+      .textContent = `GM length = ${fmt(GMlen)} = √(ab) ≤ 1 (always inside semicircle)`;
   }
 
   bRange.addEventListener("input", update, { passive:true });
@@ -215,4 +217,3 @@
 </script>
 </body>
 </html>
-
