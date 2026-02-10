@@ -18,6 +18,13 @@
     .eq{ white-space:pre-wrap; font-size:13px; color:#333; line-height:1.55; }
     .hint{ margin-top:10px; font-size:13px; color:#444; }
     svg{ width:100%; height:auto; display:block; }
+    /* Force two columns on desktop */
+@media (min-width: 900px){
+  .wrap{
+    grid-template-columns: 1.2fr 0.8fr !important;
+  }
+}
+
   </style>
 </head>
 
