@@ -238,24 +238,24 @@
     const Fsvg = toSvg(F);
 
     // A
-    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.01"}));
-    dyn.appendChild(el("text",{ x:0.04,y:-0.55,fill:"#111","font-size":"0.14",class:"mono"})).textContent="A";
+    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#e11d48","stroke-width":"0.01"}));
+    dyn.appendChild(el("text",{ x:0.04,y:-0.55,fill:"#e11d48","font-size":"0.14",class:"mono"})).textContent="A";
 
     // G
-    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.01"}));
-    dyn.appendChild(el("text",{ x:Jsvg.x+0.03,y:(Psvg.y+Jsvg.y)/2,fill:"#111","font-size":"0.14",class:"mono"})).textContent="G";
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#2563eb","stroke-width":"0.01"}));
+    dyn.appendChild(el("text",{ x:Jsvg.x+0.03,y:(Psvg.y+Jsvg.y)/2,fill:"#2563eb","font-size":"0.14",class:"mono"})).textContent="G";
 
     // Q
-    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.01"}));
-    dyn.appendChild(el("text",{ x:(Psvg.x+Csvg.x)/2+0.02,y:(Psvg.y+Csvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="Q";
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#16a34a","stroke-width":"0.01"}));
+    dyn.appendChild(el("text",{ x:(Psvg.x+Csvg.x)/2+0.02,y:(Psvg.y+Csvg.y)/2-0.02,fill:"#16a34a","font-size":"0.14",class:"mono"})).textContent="Q";
 
     // helpers
     dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.015"}));
     dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Fsvg.x,y2:Fsvg.y, stroke:"#111","stroke-width":"0.015"}));
 
     // H
-    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.01"}));
-    dyn.appendChild(el("text",{ x:(Fsvg.x+Jsvg.x)/2+0.02,y:(Fsvg.y+Jsvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="H";
+    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#d946ef","stroke-width":"0.01"}));
+    dyn.appendChild(el("text",{ x:(Fsvg.x+Jsvg.x)/2+0.02,y:(Fsvg.y+Jsvg.y)/2-0.02,fill:"#d946ef","font-size":"0.14",class:"mono"})).textContent="H";
 
     // split tick
     dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Psvg.x,y2:Psvg.y+0.06, stroke:"#111","stroke-width":"0.02"}));
