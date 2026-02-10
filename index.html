@@ -61,16 +61,6 @@
       <span class="mono" id="abOut"></span>
     </div>
 
-    <div class="hint">
-      Construction (matching your description):
-      <span class="mono">A</span> is the radius (AM=1, red). At split point <span class="mono">P</span>, the vertical to the arc is
-      <span class="mono">G</span> (GM, blue). The chord from <span class="mono">P</span> to the top point <span class="mono">C</span> is
-      <span class="mono">Q</span> (QM, green). For <span class="mono">H</span>: take the radius <span class="mono">R = OJ</span> to the top of the blue segment;
-      drop a perpendicular from <span class="mono">P</span> to <span class="mono">R</span> at <span class="mono">F</span>;
-      then <span class="mono">FJ</span> is the harmonic mean (magenta).
-    </div>
-  </div>
-
   <!-- RIGHT: values -->
   <div class="card">
     <h1>Values & equations</h1>
@@ -239,20 +229,17 @@ dyn.appendChild(el("line", {
     eqBlock.textContent =
 `Given a + b = 2 (diameter = 2) and radius = 1:
 
-AM = A = (a + b)/2 = 1
+Arithmetic Mean = A (red) = (a + b)/2 = 1
 
-GM = G = √(ab)
+Geometric Mean = G (green) = √(ab)
 (also G = √(1 - x²) where x = a - 1)
 
-HM = H = 2ab/(a + b) = ab
+HM = H = 2ab/(a + b)
+(equal to ab in a unit circle diameter = 2)
 
 QM = Q = √((a² + b²)/2)
 (also Q = √(1 + x²) where x = a - 1)
-
-H construction:
-Let J=(x, G) on the circle and R be radius OJ.
-Drop perpendicular from P=(x,0) to R at F.
-Then |FJ| = 1 - x² = ab = HM.`;
+`;
   }
 
   bRange.addEventListener("input", update, { passive:true });
