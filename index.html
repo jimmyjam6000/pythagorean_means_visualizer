@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pythagorean Means (Upper Semicircle, r=1)</title>
+  <title>Pythagorean Means (Euclid-style, r=1)</title>
   <style>
     body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#111; }
     .wrap{ max-width:1100px; margin:0 auto; padding:16px; display:grid; grid-template-columns:1.2fr 0.8fr; gap:16px; }
@@ -25,27 +25,13 @@
   <div class="wrap">
     <div class="card">
       <div class="row" style="justify-content:space-between;">
-        <h1>Pythagorean Means (upper semicircle, radius = 1)</h1>
-        <span class="badge mono">a + b = 2 ⇒ AM = 1</span>
+        <h1>Pythagorean Means (Euclid-style; r = 1, a+b=2)</h1>
+        <span class="badge mono">a = 2 − b,  AM = 1</span>
       </div>
 
-      <!-- Normal SVG coords: +y is DOWN.
-           We draw the *upper* semicircle using the correct arc sweep flag. -->
-      <svg viewBox="-1.25 -1.75 2.5 2.05" aria-label="Means visualization">
-        <!-- faint axes -->
-        <line x1="-1.2" y1="0" x2="1.2" y2="0" stroke="#eee" stroke-width="0.01"/>
-        <line x1="0" y1="-1.65" x2="0" y2="0.25" stroke="#eee" stroke-width="0.01"/>
-
-        <!-- Upper semicircle: sweep flag = 1 makes the arc go to negative y (up) here -->
-        <path d="M -1 0 A 1 1 0 0 1 1 0" fill="none" stroke="#111" stroke-width="0.02"/>
-
-        <!-- diameter -->
-        <line x1="-1" y1="0" x2="1" y2="0" stroke="#111" stroke-width="0.03"/>
-
-        <!-- dynamic -->
-        <g id="dynamic"></g>
-
-        <text x="-1.18" y="-1.55" font-size="0.09" class="mono" fill="#111">Upper semicircle (r=1)</text>
+      <!-- SVG coords: +y is DOWN. We'll draw the upper semicircle with negative y. -->
+      <svg viewBox="-2.35 -1.75 4.7 2.25" aria-label="Pythagorean means visualization">
+        <g id="dyn"></g>
       </svg>
 
       <div class="row" style="margin-top:10px;">
@@ -55,8 +41,10 @@
       </div>
 
       <div class="hint">
-        Euclidean HM construction used here: since <span class="mono">GM=h=√(ab)</span> and <span class="mono">a+b=2</span>,
-        we have <span class="mono">HM=ab=h²</span>. We construct <span class="mono">h²</span> from <span class="mono">h</span> by similar triangles (a classic “multiply lengths” construction).
+        Construction: endpoints of the diameter are <span class="mono">(-a,0)</span> and <span class="mono">(b,0)</span> with <span class="mono">a+b=2</span>.
+        The circle has radius 1 and center <span class="mono">c=b−1</span>.
+        The perpendicular from <span class="mono">O=(0,0)</span> to the semicircle gives <span class="mono">GM=√(ab)</span>.
+        Then <span class="mono">HM = ab = (GM)²</span>, constructed by similar triangles and projected back to the vertical through O.
       </div>
     </div>
 
@@ -73,16 +61,21 @@
 
       <hr style="border:none;border-top:1px solid #eee; margin:12px 0;" />
       <div class="eq mono" id="eqBlock"></div>
+
+      <div class="hint">
+        I’m intentionally not forcing a “QM segment” into this same semicircle diagram; the clean Euclidean RMS construction is different.
+        You still get the exact numeric QM value here.
+      </div>
     </div>
   </div>
 
 <script>
 (() => {
   const svgNS = "http://www.w3.org/2000/svg";
-  const dyn = document.getElementById("dynamic");
+  const dyn = document.getElementById("dyn");
   const bRange = document.getElementById("bRange");
-
   const bLabel = document.getElementById("bLabel");
+
   const aVal = document.getElementById("aVal");
   const bVal = document.getElementById("bVal");
   const amVal = document.getElementById("amVal");
@@ -103,26 +96,98 @@
     const b = parseFloat(bRange.value);
     const a = 2 - b;
 
-    const AM = (a + b)/2;              // = 1
-    const GM = Math.sqrt(a*b);         // = h
-    const HM = (2*a*b)/(a+b);          // = ab (since a+b=2)
+    const AM = 1;
+    const GM = Math.sqrt(a*b);
+    const HM = a*b; // because a+b=2
     const QM = Math.sqrt((a*a + b*b)/2);
 
-    // Split point M on diameter [-1,1]
-    const xM = 1 - b;
+    // Circle center c on x-axis so endpoints of diameter are -a and b
+    const c = b - 1; // (b-a)/2 with a=2-b
+    const r = 1;
 
-    // Upper semicircle is y = -sqrt(1-x^2) in SVG coordinates
-    const yTop = -Math.sqrt(Math.max(0, 1 - xM*xM)); // = -GM
-    const h = GM;
+    // Split point O fixed at (0,0)
+    const Ox = 0, Oy = 0;
 
-    // Euclidean “multiply lengths” to get h^2:
-    // Make Q = (1, -h). Line OQ has equation y = -h x.
-    // At x = h, y = -h^2. Vertical length from axis to that point is h^2 = HM.
-    const xH = h;
-    const yH = -h*h; // = -HM
+    // Endpoints of diameter
+    const Lx = -a, Rx = b;
 
-    // Labels
-    bLabel.textContent = `b = ${fmt(b)} (a = ${fmt(a)})`;
+    // GM point is intersection of x=0 with circle: (0-c)^2 + y^2 = 1
+    // upper semicircle => y is negative in SVG coords
+    const yG = -Math.sqrt(Math.max(0, 1 - c*c)); // = -sqrt(ab)
+    const h = -yG; // positive length, GM
+
+    // --- Harmonic mean Euclid-style, inside diagram ---
+    // Since HM = h^2, we square h via similar triangles:
+    // Take Q = (1, -h). Line OQ: y = -h x.
+    // At x=h, y=-h^2. Project horizontally back to x=0 to get H=(0,-h^2).
+    const Qx = 1, Qy = -h;
+    const Px = h, Py = -(h*h);
+    const Hx = 0, Hy = Py; // on vertical through O
+
+    // Build SVG
+    clear(dyn);
+
+    // axes
+    dyn.appendChild(el("line",{x1:-2.3,y1:0,x2:2.3,y2:0,stroke:"#eee","stroke-width":"0.01"}));
+    dyn.appendChild(el("line",{x1:0,y1:-1.7,x2:0,y2:0.35,stroke:"#eee","stroke-width":"0.01"}));
+
+    // upper semicircle: param arc from L to R with center c, radius 1
+    // SVG arc from (Lx,0) to (Rx,0). Use sweep=1 so arc goes "up" (negative y) here.
+    dyn.appendChild(el("path",{
+      d:`M ${Lx} 0 A 1 1 0 0 1 ${Rx} 0`,
+      fill:"none", stroke:"#111", "stroke-width":"0.02"
+    }));
+
+    // diameter
+    dyn.appendChild(el("line",{x1:Lx,y1:0,x2:Rx,y2:0,stroke:"#111","stroke-width":"0.03"}));
+
+    // center marker
+    dyn.appendChild(el("circle",{cx:c,cy:0,r:0.02,fill:"#111"}));
+    dyn.appendChild(el("text",{x:c+0.04,y:-0.08,fill:"#111","font-size":"0.085",class:"mono"})).textContent="center";
+
+    // a and b segments
+    dyn.appendChild(el("line",{x1:Lx,y1:0,x2:0,y2:0,stroke:"#7c3aed","stroke-width":"0.05","stroke-linecap":"round"}));
+    dyn.appendChild(el("line",{x1:0,y1:0,x2:Rx,y2:0,stroke:"#06b6d4","stroke-width":"0.05","stroke-linecap":"round"}));
+    dyn.appendChild(el("text",{x:(Lx+0)/2,y:0.14,fill:"#7c3aed","font-size":"0.10",class:"mono"})).textContent=`a=${fmt(a)}`;
+    dyn.appendChild(el("text",{x:(0+Rx)/2,y:0.14,fill:"#06b6d4","font-size":"0.10",class:"mono"})).textContent=`b=${fmt(b)}`;
+
+    // O point
+    dyn.appendChild(el("circle",{cx:0,cy:0,r:0.03,fill:"#111"}));
+    dyn.appendChild(el("text",{x:0.04,y:-0.08,fill:"#111","font-size":"0.09",class:"mono"})).textContent="O";
+
+    // GM (vertical to semicircle)
+    dyn.appendChild(el("line",{x1:0,y1:0,x2:0,y2:yG,stroke:"#16a34a","stroke-width":"0.04","stroke-linecap":"round"}));
+    dyn.appendChild(el("circle",{cx:0,cy:yG,r:0.028,fill:"#16a34a"}));
+    dyn.appendChild(el("text",{x:0.07,y:yG-0.03,fill:"#16a34a","font-size":"0.10",class:"mono"})).textContent=`GM=${fmt(GM)}`;
+
+    // AM as a radius (always 1): from center straight up to top of circle above center
+    dyn.appendChild(el("line",{x1:c,y1:0,x2:c,y2:-1,stroke:"#f59e0b","stroke-width":"0.035","stroke-linecap":"round"}));
+    dyn.appendChild(el("text",{x:c+0.06,y:-1.04,fill:"#f59e0b","font-size":"0.10",class:"mono"})).textContent="AM=1";
+
+    // HM construction:
+    // 1) mark Q=(1,-h) and draw OQ
+    dyn.appendChild(el("line",{x1:0,y1:0,x2:Qx,y2:Qy,stroke:"#dc2626","stroke-width":"0.02","stroke-dasharray":"0.04 0.04"}));
+    dyn.appendChild(el("circle",{cx:Qx,cy:Qy,r:0.02,fill:"#dc2626"}));
+    dyn.appendChild(el("text",{x:Qx+0.04,y:Qy-0.03,fill:"#dc2626","font-size":"0.085",class:"mono"})).textContent="Q";
+
+    // 2) vertical at x=h to meet OQ at P=(h,-h^2)
+    dyn.appendChild(el("line",{x1:Px,y1:0,x2:Px,y2:Py,stroke:"#dc2626","stroke-width":"0.02"}));
+    dyn.appendChild(el("circle",{cx:Px,cy:Py,r:0.02,fill:"#dc2626"}));
+    dyn.appendChild(el("text",{x:Px+0.04,y:Py-0.03,fill:"#dc2626","font-size":"0.085",class:"mono"})).textContent="P";
+
+    // 3) horizontal projection back to the O-vertical to define H=(0,-h^2)
+    dyn.appendChild(el("line",{x1:Px,y1:Py,x2:Hx,y2:Hy,stroke:"#dc2626","stroke-width":"0.02"}));
+    dyn.appendChild(el("circle",{cx:Hx,cy:Hy,r:0.022,fill:"#dc2626"}));
+    dyn.appendChild(el("line",{x1:0,y1:0,x2:0,y2:Hy,stroke:"#dc2626","stroke-width":"0.04","stroke-linecap":"round"}));
+    dyn.appendChild(el("text",{x:0.07,y:Hy-0.03,fill:"#dc2626","font-size":"0.10",class:"mono"})).textContent=`HM=${fmt(HM)}`;
+
+    // top label
+    dyn.appendChild(el("text",{x:-2.25,y:-1.55,fill:"#111","font-size":"0.09",class:"mono"}))
+      .textContent="Upper semicircle (r=1)";
+
+    // UI
+    bLabel.textContent = `b = ${fmt(b)}  (a = ${fmt(a)})`;
+
     aVal.textContent = fmt(a);
     bVal.textContent = fmt(b);
     amVal.textContent = fmt(AM);
@@ -131,63 +196,10 @@
     qmVal.textContent = fmt(QM);
 
     eqBlock.textContent =
-      `AM(a,b) = (a + b)/2 = 1\n` +
+      `AM(a,b) = (a+b)/2 = 1\n` +
       `GM(a,b) = √(ab) = ${fmt(GM)}\n` +
-      `HM(a,b) = 2ab/(a + b) = ab = ${fmt(HM)}\n` +
-      `QM(a,b) = √((a² + b²)/2) = ${fmt(QM)}\n`;
-
-    // redraw
-    clear(dyn);
-
-    // a segment (left) and b segment (right)
-    dyn.appendChild(el("line", { x1:-1, y1:0, x2:xM, y2:0, stroke:"#7c3aed", "stroke-width":"0.05", "stroke-linecap":"round" }));
-    dyn.appendChild(el("line", { x1:xM, y1:0, x2:1, y2:0, stroke:"#06b6d4", "stroke-width":"0.05", "stroke-linecap":"round" }));
-
-    dyn.appendChild(el("text", { x:(-1+xM)/2, y:0.14, "font-size":"0.10", fill:"#7c3aed", class:"mono" })).textContent = `a=${fmt(a)}`;
-    dyn.appendChild(el("text", { x:(xM+1)/2, y:0.14, "font-size":"0.10", fill:"#06b6d4", class:"mono" })).textContent = `b=${fmt(b)}`;
-
-    // point M
-    dyn.appendChild(el("circle", { cx:xM, cy:0, r:0.03, fill:"#111" }));
-    dyn.appendChild(el("text", { x:xM+0.03, y:-0.08, "font-size":"0.09", fill:"#111", class:"mono" })).textContent = "M";
-
-    // GM construction: perpendicular from M up to semicircle
-    dyn.appendChild(el("line", { x1:xM, y1:0, x2:xM, y2:yTop, stroke:"#16a34a", "stroke-width":"0.04", "stroke-linecap":"round" }));
-    dyn.appendChild(el("circle", { cx:xM, cy:yTop, r:0.028, fill:"#16a34a" }));
-    dyn.appendChild(el("text", { x:xM+0.05, y:yTop-0.03, "font-size":"0.10", fill:"#16a34a", class:"mono" })).textContent = `GM=${fmt(GM)}`;
-
-    // AM = 1: show radius upward
-    dyn.appendChild(el("line", { x1:0, y1:0, x2:0, y2:-1, stroke:"#f59e0b", "stroke-width":"0.035", "stroke-linecap":"round" }));
-    dyn.appendChild(el("text", { x:0.05, y:-1.05, "font-size":"0.10", fill:"#f59e0b", class:"mono" })).textContent = "AM=1";
-
-    // QM: dashed (can exceed 1)
-    dyn.appendChild(el("line", {
-      x1:-0.15, y1:0, x2:-0.15, y2:-QM,
-      stroke:"#2563eb", "stroke-width":"0.03", "stroke-linecap":"round",
-      "stroke-dasharray":"0.05 0.05"
-    }));
-    dyn.appendChild(el("text", { x:-0.62, y:-QM-0.02, "font-size":"0.10", fill:"#2563eb", class:"mono" })).textContent = `QM=${fmt(QM)}`;
-
-    // --- HM Euclidean construction (inside the diagram) ---
-    // Step A: build Q=(1,-h)
-    const Qx = 1, Qy = -h;
-
-    // Draw vertical at x=1 of height h (from axis up to Q)
-    dyn.appendChild(el("line", { x1:1, y1:0, x2:1, y2:Qy, stroke:"#dc2626", "stroke-width":"0.02" }));
-    dyn.appendChild(el("circle", { cx:Qx, cy:Qy, r:0.02, fill:"#dc2626" }));
-    dyn.appendChild(el("text", { x:0.93, y:Qy-0.04, "font-size":"0.085", fill:"#dc2626", class:"mono" })).textContent = "Q";
-
-    // Step B: line OQ
-    dyn.appendChild(el("line", { x1:0, y1:0, x2:Qx, y2:Qy, stroke:"#dc2626", "stroke-width":"0.02", "stroke-dasharray":"0.04 0.04" }));
-
-    // Step C: at x=h, drop a vertical to meet line OQ; its height is h^2 = HM
-    dyn.appendChild(el("line", { x1:xH, y1:0, x2:xH, y2:yH, stroke:"#dc2626", "stroke-width":"0.035", "stroke-linecap":"round" }));
-    dyn.appendChild(el("circle", { cx:xH, cy:yH, r:0.022, fill:"#dc2626" }));
-    dyn.appendChild(el("text", { x:Math.min(xH+0.05, 1.05), y:yH-0.03, "font-size":"0.10", fill:"#dc2626", class:"mono" }))
-      .textContent = `HM=${fmt(HM)}`;
-
-    // small note showing HM = h^2
-    dyn.appendChild(el("text", { x:-1.18, y:0.22, "font-size":"0.085", fill:"#666", class:"mono" }))
-      .textContent = `Here: h=GM, and HM=h² (since a+b=2)`;
+      `HM(a,b) = 2ab/(a+b) = ab = ${fmt(HM)}\n` +
+      `QM(a,b) = √((a²+b²)/2) = ${fmt(QM)}\n`;
   }
 
   bRange.addEventListener("input", update, { passive:true });
