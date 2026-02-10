@@ -163,6 +163,17 @@
     const Jsv = toSvg(J);
     const Fsv = toSvg(F);
 
+    // --- downward tick at split point P ---
+dyn.appendChild(el("line", {
+  x1: Psv.x,
+  y1: Psv.y,
+  x2: Psv.x,
+  y2: Psv.y + 0.06,   // downward in SVG coords
+  stroke: "#111",
+  "stroke-width": "0.02"
+}));
+
+
     // --- A (red): radius from O to C ---
     dyn.appendChild(el("line", { x1: Osvg.x, y1: Osvg.y, x2: Csv.x, y2: Csv.y, stroke:"#e11d48", "stroke-width":"0.03" }));
     dyn.appendChild(el("text", { x: 0.04, y: -0.55, fill:"#e11d48", "font-size":"0.14", class:"mono" })).textContent = "A";
