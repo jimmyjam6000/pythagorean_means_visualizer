@@ -145,15 +145,15 @@
     </svg>
 
     <div class="controls">
-      <label for="bRange">Move b:</label>
+      <label for="bRange">Move:</label>
       <input id="bRange" type="range" min="0.05" max="1.95" step="0.001" value="0.35" />
       <span class="mono" id="abOut"></span>
     </div>
 
     <div class="hint">
-      A = arithmetic mean (radius), G = geometric mean (sagitta),
-      Q = quadratic mean (chord to top),
-      H = harmonic mean (segment on radius to sagitta).
+      A = arithmetic mean (radius), G = geometric mean,
+      Q = quadratic mean,
+      H = harmonic mean.
     </div>
   </div>
 
@@ -238,15 +238,15 @@
     const Fsvg = toSvg(F);
 
     // A
-    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.01"}));
     dyn.appendChild(el("text",{ x:0.04,y:-0.55,fill:"#111","font-size":"0.14",class:"mono"})).textContent="A";
 
     // G
-    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.01"}));
     dyn.appendChild(el("text",{ x:Jsvg.x+0.03,y:(Psvg.y+Jsvg.y)/2,fill:"#111","font-size":"0.14",class:"mono"})).textContent="G";
 
     // Q
-    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Csvg.x,y2:Csvg.y, stroke:"#111","stroke-width":"0.01"}));
     dyn.appendChild(el("text",{ x:(Psvg.x+Csvg.x)/2+0.02,y:(Psvg.y+Csvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="Q";
 
     // helpers
@@ -254,7 +254,7 @@
     dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Fsvg.x,y2:Fsvg.y, stroke:"#111","stroke-width":"0.015"}));
 
     // H
-    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.02"}));
+    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.01"}));
     dyn.appendChild(el("text",{ x:(Fsvg.x+Jsvg.x)/2+0.02,y:(Fsvg.y+Jsvg.y)/2-0.02,fill:"#111","font-size":"0.14",class:"mono"})).textContent="H";
 
     // split tick
@@ -271,10 +271,10 @@
     qmVal.textContent = fmt(QM);
 
     eqBlock.textContent =
-`AM = (a + b)/2 = 1
-GM = √(ab)
-HM = 2ab/(a+b) = ab
-QM = √((a² + b²)/2)`;
+`Arithmetic Mean (red) = (a + b)/2 = 1
+Geometric Mean (green) = √(ab)
+Harmonic Mean (magenta) = 2ab/(a+b)
+Quadratic MeanM = √((a² + b²)/2)`;
   }
 
   bRange.addEventListener("input", update);
