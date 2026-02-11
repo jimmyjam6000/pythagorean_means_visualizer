@@ -253,36 +253,46 @@
     dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.015"}));
     dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Fsvg.x,y2:Fsvg.y, stroke:"#111","stroke-width":"0.015"}));
 
-    // --- right angle indicator at F between PF and FO ---
-    (function drawRightAngleAtF(){
-    const size = 0.06; // tweak for bigger/smaller corner
+    // helpers
+dyn.appendChild(el("line",{ x1:Osvg.x,y1:Osvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#111","stroke-width":"0.015"}));
+dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Fsvg.x,y2:Fsvg.y, stroke:"#111","stroke-width":"0.015"}));
 
-    // direction from F toward O (FO)
-    let ux = Osvg.x - Fsvg.x, uy = Osvg.y - Fsvg.y;
-    const un = Math.hypot(ux, uy) || 1;
-    ux /= un; uy /= un;
+// --- right angle indicator at F between PF and FO ---
+(function drawRightAngleAtF(){
+  const size = 0.06; // tweak for bigger/smaller corner
 
-    // direction from F toward P (FP)
-    let vx = Psvg.x - Fsvg.x, vy = Psvg.y - Fsvg.y;
-    const vn = Math.hypot(vx, vy) || 1;
-    vx /= vn; vy /= vn;
+  // direction from F toward O (FO)
+  let ux = Osvg.x - Fsvg.x, uy = Osvg.y - Fsvg.y;
+  const un = Math.hypot(ux, uy) || 1;
+  ux /= un; uy /= un;
 
-    // three points that make the little square corner:
-    // F + u*size, then + v*size, then F + v*size
-    const p1x = Fsvg.x + ux * size, p1y = Fsvg.y + uy * size;
-    const p2x = p1x + vx * size,    p2y = p1y + vy * size;
-    const p3x = Fsvg.x + vx * size, p3y = Fsvg.y + vy * size;
+  // direction from F toward P (FP)
+  let vx = Psvg.x - Fsvg.x, vy = Psvg.y - Fsvg.y;
+  const vn = Math.hypot(vx, vy) || 1;
+  vx /= vn; vy /= vn;
 
-    dyn.appendChild(el("path",{
+  // corner points
+  const p1x = Fsvg.x + ux * size, p1y = Fsvg.y + uy * size;
+  const p2x = p1x + vx * size,    p2y = p1y + vy * size;
+  const p3x = Fsvg.x + vx * size, p3y = Fsvg.y + vy * size;
+
+  dyn.appendChild(el("path",{
     d: `M ${p1x} ${p1y} L ${p2x} ${p2y} L ${p3x} ${p3y}`,
     fill: "none",
     stroke: "#111",
     "stroke-width": "0.01"
-    }));
-    
-    // H
-    dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#d946ef","stroke-width":"0.01"}));
-    dyn.appendChild(el("text",{ x:(Fsvg.x+Jsvg.x)/2+0.02,y:(Fsvg.y+Jsvg.y)/2-0.02,fill:"#d946ef","font-size":"0.14",class:"mono"})).textContent="H";
+  }));
+})();
+
+// H (keep this OUTSIDE the IIFE)
+dyn.appendChild(el("line",{ x1:Fsvg.x,y1:Fsvg.y,x2:Jsvg.x,y2:Jsvg.y, stroke:"#d946ef","stroke-width":"0.02"}));
+dyn.appendChild(el("text",{
+  x:(Fsvg.x+Jsvg.x)/2+0.02,
+  y:(Fsvg.y+Jsvg.y)/2-0.02,
+  fill:"#d946ef",
+  "font-size":"0.14",
+  class:"mono"
+})).textContent="H";
 
     // split tick
     dyn.appendChild(el("line",{ x1:Psvg.x,y1:Psvg.y,x2:Psvg.x,y2:Psvg.y+0.06, stroke:"#111","stroke-width":"0.02"}));
